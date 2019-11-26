@@ -37,10 +37,12 @@ public class QuestionService {
 
     public void add(Question bean) {
         questionDAO.save(bean);
+        questionESDAO.save(bean);
     }
 
     public void delete(int id) {
         questionDAO.delete(id);
+        questionESDAO.delete(id);
     }
 
     public Question get(int id) {
@@ -49,6 +51,7 @@ public class QuestionService {
 
     public void update(Question bean) {
         questionDAO.save(bean);
+        questionESDAO.save(bean);
     }
 
     public Page4Navigator<Question> list(int uid, int start, int size, int navigatePages){
@@ -90,13 +93,13 @@ public class QuestionService {
 //        initDatabase2ES();
         FunctionScoreQueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery()
                 .add(QueryBuilders.matchQuery("detailquestion", keyword),
-                        ScoreFunctionBuilders.weightFactorFunction(1000))
+                        ScoreFunctionBuilders.weightFactorFunction(100))
                 .add(QueryBuilders.matchQuery("explanation", keyword),
                         ScoreFunctionBuilders.weightFactorFunction(50))
                 .scoreMode("sum")
                 .setMinScore(100);
 
-        Pageable pageable = new PageRequest(start, 10);
+        Pageable pageable = new PageRequest(0, 10);
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withPageable(pageable)
                 .withQuery(functionScoreQueryBuilder).build();
@@ -108,7 +111,6 @@ public class QuestionService {
 
 //        清空ES数据库
         questionESDAO.deleteAll();
-
 
         Pageable pageable = new PageRequest(0, 5);
         Page<Question> page = questionESDAO.findAll(pageable);
